@@ -1,0 +1,223 @@
+:root {
+  --primary-color: #10b981;
+  --primary-dark: #059669;
+  --primary-light: #34d399;
+  --background-color: #ecfdf5;
+  --text-color: #064e3b;
+  --border-color: #6ee7b7;
+  --grid-size: min(80vw, 400px);
+  --cell-border: 2px solid var(--border-color);
+}
+
+body {
+  font-family: "Arial", sans-serif;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+  margin: 0;
+  background-color: var(--background-color);
+  color: var(--text-color);
+}
+
+.container {
+  text-align: center;
+  background-color: white;
+  padding: 2rem;
+  border-radius: 1rem;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  width: 90%;
+  max-width: 500px;
+}
+
+h1 {
+  color: var(--primary-color);
+  margin-bottom: 2rem;
+  font-size: clamp(1.5rem, 5vw, 2.5rem);
+}
+
+.board {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  grid-template-rows: repeat(3, 1fr);
+  gap: 0;
+  margin: 0 auto 2rem;
+  background-color: var(--border-color);
+  padding: 0.5rem;
+  border-radius: 0.5rem;
+  width: var(--grid-size);
+  aspect-ratio: 1;
+  position: relative;
+}
+
+.cell {
+  background-color: white;
+  border: var(--cell-border);
+  font-size: clamp(2rem, 8vw, 4rem);
+  font-weight: bold;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s;
+  aspect-ratio: 1;
+  position: relative;
+}
+
+/* Remove borders for cells that don't need them */
+.cell:nth-child(3n) {
+  border-right: none;
+}
+
+.cell:nth-child(3n + 1) {
+  border-left: none;
+}
+
+.cell:nth-child(-n + 3) {
+  border-top: none;
+}
+
+.cell:nth-child(n + 7) {
+  border-bottom: none;
+}
+
+.cell:hover {
+  background-color: var(--background-color);
+  transform: scale(0.98);
+}
+
+.cell.x {
+  color: var(--primary-color);
+}
+
+.cell.o {
+  color: var(--primary-dark);
+}
+
+.status {
+  font-size: clamp(1rem, 4vw, 1.5rem);
+  margin-bottom: 1rem;
+  color: var(--text-color);
+  min-height: 2em;
+  padding: 0.5rem;
+  background-color: var(--background-color);
+  border-radius: 0.5rem;
+  border: 1px solid var(--border-color);
+}
+
+.controls {
+  display: flex;
+  gap: 1rem;
+  justify-content: center;
+  margin-bottom: 1rem;
+  flex-wrap: wrap;
+}
+
+button {
+  padding: 0.75rem 1.5rem;
+  font-size: clamp(0.9rem, 3vw, 1rem);
+  border: none;
+  border-radius: 0.5rem;
+  cursor: pointer;
+  transition: all 0.2s;
+  background-color: var(--primary-color);
+  color: white;
+  min-width: 120px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+button:hover {
+  background-color: var(--primary-dark);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+button:disabled {
+  background-color: #9ca3af;
+  cursor: not-allowed;
+  transform: none;
+  box-shadow: none;
+}
+
+#restartBtn {
+  display: none;
+  background-color: var(--primary-dark);
+}
+
+#restartBtn:hover {
+  background-color: var(--primary-color);
+}
+
+@media (max-width: 400px) {
+  .container {
+    padding: 1rem;
+  }
+
+  .btn {
+    padding: 0.5rem 1rem;
+  }
+
+  .cell {
+    font-size: 2rem;
+  }
+}
+
+.room-code {
+  background-color: var(--background-color);
+  padding: 1rem;
+  border-radius: 0.5rem;
+  margin: 1rem 0;
+  border: 2px solid var(--border-color);
+}
+
+.room-code h3 {
+  color: var(--text-color);
+  margin: 0 0 0.5rem 0;
+  font-size: clamp(1rem, 4vw, 1.2rem);
+}
+
+.code-container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+#roomCode {
+  font-size: clamp(1.5rem, 6vw, 2rem);
+  font-weight: bold;
+  color: var(--primary-color);
+  letter-spacing: 0.2rem;
+  background-color: white;
+  padding: 0.5rem 1rem;
+  border-radius: 0.5rem;
+  border: 2px solid var(--border-color);
+}
+
+.copy-btn {
+  padding: 0.5rem 1rem;
+  font-size: clamp(0.8rem, 3vw, 0.9rem);
+  background-color: var(--primary-light);
+}
+
+.copy-btn:hover {
+  background-color: var(--primary-dark);
+}
+
+/* Add winning line animation */
+@keyframes winLine {
+  0% {
+    transform: scaleX(0);
+  }
+  100% {
+    transform: scaleX(1);
+  }
+}
+
+.winning-line {
+  position: absolute;
+  background-color: var(--primary-color);
+  height: 4px;
+  animation: winLine 0.5s ease-out forwards;
+}
