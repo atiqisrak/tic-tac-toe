@@ -6,7 +6,6 @@
     <title>Tic Tac Toe</title>
     <link rel="stylesheet" href="styles.css" />
     <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.9.2/dist/confetti.browser.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/qrcode@1.5.3/build/qrcode.min.js"></script>
     <link
       rel="stylesheet"
       href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css"
@@ -58,7 +57,9 @@
     <div class="game-container" id="gameContainer" style="display: none">
       <div class="game-section">
         <div id="status">Welcome! Host or join a game.</div>
-        <div class="room-code-container"></div>
+        <div class="room-code-container">
+          <div id="qrCode"></div>
+        </div>
         <div class="board" id="gameBoard" style="display: none">
           <div class="cell" data-index="0"></div>
           <div class="cell" data-index="1"></div>
@@ -123,6 +124,6 @@
     </div>
 
     <script src="https://unpkg.com/html5-qrcode"></script>
-    <script src="game.js"></script>
+    <script type="module" src="game.js"></script>
   </body>
 </html>

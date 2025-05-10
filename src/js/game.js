@@ -140,7 +140,6 @@ class TicTacToe {
             Copy Link
           </button>
         </div>
-        <div class="qr-code" id="qrCode"></div>
       `;
 
       // Remove any existing room code display
