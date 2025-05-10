@@ -128,7 +128,7 @@ body {
   align-items: center;
   min-height: 200px;
   width: 100%;
-  max-width: 200px;
+  max-width: 100%;
   margin: 0 auto;
 }
 
@@ -591,4 +591,88 @@ button:active {
   to {
     opacity: 0;
   }
+}
+
+.room-code-popup {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+}
+
+.room-code-popup .popup-content {
+  background-color: white;
+  padding: 2rem;
+  border-radius: 8px;
+  text-align: center;
+  max-width: 90%;
+  width: 400px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.room-code-popup h3 {
+  margin-bottom: 1.5rem;
+  color: #333;
+}
+
+.room-code-popup .code-container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+}
+
+.room-code-popup #roomCode {
+  font-size: 1.5rem;
+  font-weight: bold;
+  padding: 0.5rem 1rem;
+  background-color: #f3f4f6;
+  border-radius: 4px;
+  letter-spacing: 2px;
+}
+
+.room-code-popup .copy-btn {
+  padding: 0.5rem 1rem;
+  background-color: #10b981;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.room-code-popup .copy-btn:hover {
+  background-color: #059669;
+}
+
+.room-code-popup .qr-code {
+  margin: 1.5rem auto;
+  width: 200px;
+  height: 200px;
+}
+
+.room-code-popup .popup-status {
+  margin: 1rem 0;
+  color: #666;
+}
+
+.room-code-popup .close-popup-btn {
+  padding: 0.75rem 1.5rem;
+  background-color: #ef4444;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.room-code-popup .close-popup-btn:hover {
+  background-color: #dc2626;
 }

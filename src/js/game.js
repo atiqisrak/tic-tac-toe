@@ -124,40 +124,63 @@ class TicTacToe {
       this.roomId = generateRoomId();
       this.wsService.connect();
       this.isHost = true;
-      this.showGameScreen();
 
-      // Create room code display with QR code
-      const roomCodeDisplay = document.createElement("div");
-      roomCodeDisplay.className = "room-code";
+      // Create and show popup for room code and QR code
+      const popup = document.createElement("div");
+      popup.className = "room-code-popup";
       const currentUrl = window.location.href.split("?")[0];
       const roomUrl = `${currentUrl}?room=${this.roomId}`;
 
-      roomCodeDisplay.innerHTML = `
-        <h3>Room Code:</h3>
-        <div class="code-container">
-          <span id="roomCode">${this.roomId}</span>
-          <button onclick="navigator.clipboard.writeText('${roomUrl}')" class="copy-btn">
-            Copy Link
-          </button>
+      popup.innerHTML = `
+        <div class="popup-content">
+          <h3>Share this code with your opponent</h3>
+          <div class="code-container">
+            <span id="roomCode">${this.roomId}</span>
+            <button onclick="navigator.clipboard.writeText('${roomUrl}')" class="copy-btn">
+              Copy Link
+            </button>
+          </div>
+          <div class="qr-code" id="qrCode"></div>
+          <div class="popup-status">Waiting for opponent to join...</div>
+          <button class="close-popup-btn">Close</button>
         </div>
       `;
 
-      // Remove any existing room code display
-      const existingDisplay = document.querySelector(".room-code");
-      if (existingDisplay) {
-        existingDisplay.remove();
+      // Remove any existing popup
+      const existingPopup = document.querySelector(".room-code-popup");
+      if (existingPopup) {
+        existingPopup.remove();
       }
 
-      // Insert after the status element
-      this.status.parentNode.insertBefore(
-        roomCodeDisplay,
-        this.status.nextSibling
-      );
+      // Add popup to the body
+      document.body.appendChild(popup);
+
+      // Add close button functionality
+      const closeBtn = popup.querySelector(".close-popup-btn");
+      closeBtn.addEventListener("click", () => {
+        popup.remove();
+        this.wsService.disconnect();
+        this.showWelcomeScreen();
+      });
 
       // Generate QR code
       await this.qrService.generateQRCode(roomUrl);
 
-      this.updateStatus("Waiting for opponent to join...");
+      // Update status in popup
+      const statusElement = popup.querySelector(".popup-status");
+      const originalUpdateStatus = this.updateStatus;
+      this.updateStatus = (message) => {
+        statusElement.textContent = message;
+        if (message.includes("Game starting")) {
+          popup.remove();
+          this.showGameScreen();
+          this.gameBoard.style.display = "grid";
+          this.restartBtn.style.display = "block";
+          this.undoBtn.style.display = "block";
+          // Restore original updateStatus function
+          this.updateStatus = originalUpdateStatus;
+        }
+      };
     } catch (error) {
       console.error("Error hosting game:", error);
       this.updateStatus("Error creating room: " + error.message);

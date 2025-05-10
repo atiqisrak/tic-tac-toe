@@ -20,66 +20,53 @@ class TicTacToe {
     this.botDifficulty = "noob";
 
     // DOM elements
-    this.welcomeScreen = document.getElementById("welcomeScreen");
-    this.joinOptions = document.getElementById("joinOptions");
-    this.difficultySelect = document.getElementById("difficultySelect");
     this.gameContainer = document.getElementById("gameContainer");
     this.gameBoard = document.getElementById("gameBoard");
     this.cells = document.querySelectorAll(".cell");
     this.status = document.getElementById("status");
-    this.hostBtn = document.getElementById("hostBtn");
-    this.joinBtn = document.getElementById("joinBtn");
-    this.botBtn = document.getElementById("botBtn");
-    this.scanQRBtn = document.getElementById("scanQRBtn");
-    this.enterCodeBtn = document.getElementById("enterCodeBtn");
-    this.backToMenuBtn = document.getElementById("backToMenuBtn");
-    this.backToMenuBtn2 = document.getElementById("backToMenuBtn2");
     this.restartBtn = document.getElementById("restartBtn");
     this.undoBtn = document.getElementById("undoBtn");
     this.backBtn = document.getElementById("backBtn");
     this.moveHistoryDiv = document.getElementById("moveHistory");
-    this.qrScanner = document.getElementById("qrScanner");
-    this.closeScanner = document.getElementById("closeScanner");
     this.gameOverPopup = document.getElementById("gameOverPopup");
     this.gameOverMessage = document.getElementById("gameOverMessage");
     this.restartGameBtn = document.getElementById("restartGameBtn");
     this.goHomeBtn = document.getElementById("goHomeBtn");
 
     // Bind event listeners
-    this.hostBtn.addEventListener("click", () => this.hostGame());
-    this.joinBtn.addEventListener("click", () => this.showJoinOptions());
-    this.botBtn.addEventListener("click", () => this.showDifficultySelect());
-    this.scanQRBtn.addEventListener("click", () => this.startQRScanner());
-    this.enterCodeBtn.addEventListener("click", () => this.joinGame());
-    this.backToMenuBtn.addEventListener("click", () =>
-      this.showWelcomeScreen()
-    );
-    this.backToMenuBtn2.addEventListener("click", () =>
-      this.showWelcomeScreen()
-    );
     this.restartBtn.addEventListener("click", () => this.restartGame());
     this.undoBtn.addEventListener("click", () => this.undoMove());
-    this.backBtn.addEventListener("click", () => this.showWelcomeScreen());
-    this.closeScanner.addEventListener("click", () => this.stopQRScanner());
+    this.backBtn.addEventListener("click", () => this.goHome());
     this.restartGameBtn.addEventListener("click", () => this.restartGame());
-    this.goHomeBtn.addEventListener("click", () => this.showWelcomeScreen());
+    this.goHomeBtn.addEventListener("click", () => this.goHome());
     this.cells.forEach((cell) => {
       cell.addEventListener("click", () => this.handleCellClick(cell));
-    });
-
-    // Add difficulty selection listeners
-    document.querySelectorAll("[data-difficulty]").forEach((btn) => {
-      btn.addEventListener("click", (e) => {
-        this.botDifficulty = e.target.dataset.difficulty;
-        this.startBotGame();
-      });
     });
 
     // Initialize the board
     this.updateBoard();
     this.updateStats();
 
+    // Check URL parameters
+    const urlParams = new URLSearchParams(window.location.search);
+    const roomCode = urlParams.get("room");
+    const mode = urlParams.get("mode");
+    const difficulty = urlParams.get("difficulty");
+
+    if (mode === "bot") {
+      this.startBotGame(difficulty);
+    } else if (roomCode) {
+      this.roomId = roomCode;
+      this.connectToServer();
+    } else {
+      this.goHome();
+    }
+
     this.qrCodeService = new QRCodeService(this);
+  }
+
+  goHome() {
+    window.location.href = "index.html";
   }
 
   showWelcomeScreen() {
@@ -119,6 +106,7 @@ class TicTacToe {
       this.connectToServer();
       this.isHost = true;
       this.showGameScreen();
+      this.gameBoard.style.display = "grid";
 
       // Create room code display with QR code
       const roomCodeDisplay = document.createElement("div");
@@ -216,7 +204,7 @@ class TicTacToe {
     }
   }
 
-  startBotGame() {
+  startBotGame(difficulty) {
     this.isBotGame = true;
     this.player = "X";
     this.gameActive = true;
@@ -224,6 +212,7 @@ class TicTacToe {
     this.gameBoard.style.display = "grid";
     this.updateStatus("Your turn (X)");
     this.undoBtn.style.display = "block";
+    this.botDifficulty = difficulty || "noob";
   }
 
   makeBotMove() {
@@ -487,6 +476,20 @@ class TicTacToe {
             this.player = data.player;
             this.updateStatus(data.message);
             console.log(`Joined as player ${this.player}`);
+            // Only hide room code container when second player joins (not when host joins)
+            if (!this.isHost) {
+              const roomCodeContainer = document.querySelector(
+                ".room-code-container"
+              );
+              if (roomCodeContainer) {
+                roomCodeContainer.remove();
+              }
+              // Also remove any existing room code display
+              const roomCodeDisplay = document.querySelector(".room-code");
+              if (roomCodeDisplay) {
+                roomCodeDisplay.remove();
+              }
+            }
             break;
 
           case "start":
@@ -779,14 +782,5 @@ class TicTacToe {
   }
 }
 
-// Check for room code in URL
-window.addEventListener("load", () => {
-  const urlParams = new URLSearchParams(window.location.search);
-  const roomCode = urlParams.get("room");
-
-  const game = new TicTacToe();
-  if (roomCode) {
-    game.roomId = roomCode;
-    game.connectToServer();
-  }
-});
+// Initialize game
+new TicTacToe();

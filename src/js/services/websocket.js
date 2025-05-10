@@ -17,7 +17,9 @@ export class WebSocketService {
       console.log("WebSocket connection established");
       this.game.isConnected = true;
       this.reconnectAttempts = 0;
-      this.game.updateStatus("Connected! Waiting for opponent...");
+      if (!this.game.isHost) {
+        this.game.updateStatus("Connected! Waiting for opponent...");
+      }
     };
 
     this.socket.onmessage = (event) => {
@@ -33,14 +35,37 @@ export class WebSocketService {
 
     this.socket.onerror = (error) => {
       console.error("WebSocket error:", error);
-      this.game.updateStatus("Connection error. Please try again.");
+      if (!this.game.isHost) {
+        this.game.updateStatus("Connection error. Please try again.");
+      }
     };
   }
 
   handleMessage(data) {
     switch (data.type) {
-      case "game_start":
-        this.handleGameStart(data);
+      case "joined":
+        this.game.player = data.player;
+        if (!this.game.isHost) {
+          this.game.updateStatus(data.message);
+          this.game.showGameScreen();
+          this.game.gameBoard.style.display = "grid";
+          this.game.restartBtn.style.display = "block";
+          this.game.undoBtn.style.display = "block";
+        }
+        break;
+
+      case "start":
+        console.log("Game starting with state:", data.gameState);
+        this.game.board = data.gameState;
+        this.game.currentPlayer = data.currentPlayer;
+        this.game.gameActive = true;
+
+        // Show game screen for both players when game starts
+        this.game.showGameScreen();
+        this.game.gameBoard.style.display = "grid";
+        this.game.updateBoard();
+        this.game.updateStatus(`${this.game.currentPlayer}'s turn`);
+        this.game.undoBtn.style.display = "block";
         break;
       case "move":
         this.handleMove(data);

@@ -5,7 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Tic Tac Toe</title>
     <link rel="stylesheet" href="styles.css" />
-    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.9.2/dist/confetti.browser.min.js"></script>
     <link
       rel="stylesheet"
       href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css"
@@ -54,76 +53,12 @@
       </div>
     </div>
 
-    <div class="game-container" id="gameContainer" style="display: none">
-      <div class="game-section">
-        <div id="status">Welcome! Host or join a game.</div>
-        <div class="room-code-container">
-          <div id="qrCode"></div>
-        </div>
-        <div class="board" id="gameBoard" style="display: none">
-          <div class="cell" data-index="0"></div>
-          <div class="cell" data-index="1"></div>
-          <div class="cell" data-index="2"></div>
-          <div class="cell" data-index="3"></div>
-          <div class="cell" data-index="4"></div>
-          <div class="cell" data-index="5"></div>
-          <div class="cell" data-index="6"></div>
-          <div class="cell" data-index="7"></div>
-          <div class="cell" data-index="8"></div>
-        </div>
-        <div class="controls">
-          <button id="restartBtn" style="display: none">Restart Game</button>
-          <button id="undoBtn" style="display: none">Undo Move</button>
-          <button id="backBtn">Back to Menu</button>
-        </div>
-      </div>
-
-      <div class="side-panel">
-        <div class="stats-panel">
-          <h3>Stats</h3>
-          <div id="playerStats">
-            <div class="stat">
-              <span>Wins:</span>
-              <span id="wins">0</span>
-            </div>
-            <div class="stat">
-              <span>Losses:</span>
-              <span id="losses">0</span>
-            </div>
-            <div class="stat">
-              <span>Draws:</span>
-              <span id="draws">0</span>
-            </div>
-          </div>
-        </div>
-
-        <div class="move-history">
-          <h3>History</h3>
-          <div id="moveHistory"></div>
-        </div>
-      </div>
-    </div>
-
     <div id="qrScanner" style="display: none">
       <video id="scanner"></video>
       <button id="closeScanner">Close</button>
     </div>
 
-    <div id="gameOverPopup" class="popup" style="display: none">
-      <div class="popup-content">
-        <h2 id="gameOverMessage"></h2>
-        <div class="popup-buttons">
-          <button id="restartGameBtn" class="popup-btn">
-            <i class="fas fa-redo"></i> Play Again
-          </button>
-          <button id="goHomeBtn" class="popup-btn">
-            <i class="fas fa-home"></i> Home
-          </button>
-        </div>
-      </div>
-    </div>
-
     <script src="https://unpkg.com/html5-qrcode"></script>
-    <script type="module" src="game.js"></script>
+    <script type="module" src="landing.js"></script>
   </body>
 </html>
