@@ -31,7 +31,7 @@ A browser-based Tic Tac Toe game that can be played between two players using We
    npm start
    ```
 
-The server will start running on port 8080.
+The server will start running on port 3000.
 
 ### Playing the Game
 

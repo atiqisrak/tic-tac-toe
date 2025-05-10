@@ -5,30 +5,124 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Tic Tac Toe</title>
     <link rel="stylesheet" href="styles.css" />
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.9.2/dist/confetti.browser.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/qrcode@1.5.3/build/qrcode.min.js"></script>
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css"
+    />
   </head>
   <body>
-    <div class="container">
+    <div class="welcome-screen" id="welcomeScreen">
       <h1>Tic Tac Toe</h1>
-      <div id="status" class="status">
-        Click "Host Game" or "Join Game" to start
-      </div>
-      <div class="board">
-        <div class="cell" data-index="0"></div>
-        <div class="cell" data-index="1"></div>
-        <div class="cell" data-index="2"></div>
-        <div class="cell" data-index="3"></div>
-        <div class="cell" data-index="4"></div>
-        <div class="cell" data-index="5"></div>
-        <div class="cell" data-index="6"></div>
-        <div class="cell" data-index="7"></div>
-        <div class="cell" data-index="8"></div>
-      </div>
-      <div class="controls">
-        <button id="hostBtn">Host Game</button>
-        <button id="joinBtn">Join Game</button>
-        <button id="restartBtn">Restart Game</button>
+      <div class="options">
+        <button id="hostBtn" class="option-btn">Host Game</button>
+        <button id="joinBtn" class="option-btn">Join Game</button>
+        <button id="botBtn" class="option-btn">Play with Bot</button>
       </div>
     </div>
+
+    <div class="join-options" id="joinOptions" style="display: none">
+      <h2>Join Game</h2>
+      <div class="options">
+        <button id="scanQRBtn" class="option-btn">
+          <i class="fas fa-qrcode"></i> Scan QR Code
+        </button>
+        <button id="enterCodeBtn" class="option-btn">
+          <i class="fas fa-keyboard"></i> Enter Code
+        </button>
+        <button id="backToMenuBtn" class="option-btn back-btn">
+          <i class="fas fa-arrow-left"></i> Back to Menu
+        </button>
+      </div>
+    </div>
+
+    <div class="difficulty-select" id="difficultySelect" style="display: none">
+      <h2>Select Difficulty</h2>
+      <div class="options">
+        <button data-difficulty="noob" class="option-btn">
+          <i class="fas fa-baby"></i> Noob
+        </button>
+        <button data-difficulty="athlete" class="option-btn">
+          <i class="fas fa-running"></i> Athlete
+        </button>
+        <button data-difficulty="pro" class="option-btn">
+          <i class="fas fa-crown"></i> Pro
+        </button>
+        <button id="backToMenuBtn2" class="option-btn back-btn">
+          <i class="fas fa-arrow-left"></i> Back to Menu
+        </button>
+      </div>
+    </div>
+
+    <div class="game-container" id="gameContainer" style="display: none">
+      <div class="game-section">
+        <div id="status">Welcome! Host or join a game.</div>
+        <div class="room-code-container"></div>
+        <div class="board" id="gameBoard" style="display: none">
+          <div class="cell" data-index="0"></div>
+          <div class="cell" data-index="1"></div>
+          <div class="cell" data-index="2"></div>
+          <div class="cell" data-index="3"></div>
+          <div class="cell" data-index="4"></div>
+          <div class="cell" data-index="5"></div>
+          <div class="cell" data-index="6"></div>
+          <div class="cell" data-index="7"></div>
+          <div class="cell" data-index="8"></div>
+        </div>
+        <div class="controls">
+          <button id="restartBtn" style="display: none">Restart Game</button>
+          <button id="undoBtn" style="display: none">Undo Move</button>
+          <button id="backBtn">Back to Menu</button>
+        </div>
+      </div>
+
+      <div class="side-panel">
+        <div class="stats-panel">
+          <h3>Stats</h3>
+          <div id="playerStats">
+            <div class="stat">
+              <span>Wins:</span>
+              <span id="wins">0</span>
+            </div>
+            <div class="stat">
+              <span>Losses:</span>
+              <span id="losses">0</span>
+            </div>
+            <div class="stat">
+              <span>Draws:</span>
+              <span id="draws">0</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="move-history">
+          <h3>History</h3>
+          <div id="moveHistory"></div>
+        </div>
+      </div>
+    </div>
+
+    <div id="qrScanner" style="display: none">
+      <video id="scanner"></video>
+      <button id="closeScanner">Close</button>
+    </div>
+
+    <div id="gameOverPopup" class="popup" style="display: none">
+      <div class="popup-content">
+        <h2 id="gameOverMessage"></h2>
+        <div class="popup-buttons">
+          <button id="restartGameBtn" class="popup-btn">
+            <i class="fas fa-redo"></i> Play Again
+          </button>
+          <button id="goHomeBtn" class="popup-btn">
+            <i class="fas fa-home"></i> Home
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <script src="https://unpkg.com/html5-qrcode"></script>
     <script src="game.js"></script>
   </body>
 </html>

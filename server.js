@@ -68,9 +68,11 @@ wss.on("connection", (ws) => {
         if (!rooms.has(roomId)) {
           console.log(`Creating new room ${roomId}`);
           rooms.set(roomId, {
-            players: new Set([ws]),
+            players: new Map([[ws, "X"]]),
             gameState: Array(9).fill(""),
             currentPlayer: "X",
+            moveHistory: [],
+            lastMove: null,
           });
           ws.send(
             JSON.stringify({
@@ -83,7 +85,7 @@ wss.on("connection", (ws) => {
           const room = rooms.get(roomId);
           if (room.players.size < 2) {
             console.log(`Adding second player to room ${roomId}`);
-            room.players.add(ws);
+            room.players.set(ws, "O");
             ws.send(
               JSON.stringify({
                 type: "joined",
@@ -92,8 +94,8 @@ wss.on("connection", (ws) => {
               })
             );
             // Notify both players that the game can start
-            room.players.forEach((player) => {
-              player.send(
+            room.players.forEach((player, playerWs) => {
+              playerWs.send(
                 JSON.stringify({
                   type: "start",
                   gameState: room.gameState,
@@ -124,10 +126,11 @@ wss.on("connection", (ws) => {
           if (room.gameState[index] === "" && room.currentPlayer === player) {
             room.gameState[index] = player;
             room.currentPlayer = player === "X" ? "O" : "X";
+            room.lastMove = { index, player };
 
             // Broadcast move to all players in the room
-            room.players.forEach((player) => {
-              player.send(
+            room.players.forEach((_, playerWs) => {
+              playerWs.send(
                 JSON.stringify({
                   type: "move",
                   index,
@@ -139,22 +142,23 @@ wss.on("connection", (ws) => {
             });
 
             // Check for win or draw
-            const winner = checkWinner(room.gameState);
+            const { winner, winningLine } = checkWinner(room.gameState);
             if (winner) {
               console.log(`Player ${winner} wins!`);
-              room.players.forEach((player) => {
-                player.send(
+              room.players.forEach((_, playerWs) => {
+                playerWs.send(
                   JSON.stringify({
                     type: "gameOver",
                     winner,
                     gameState: room.gameState,
+                    winningLine,
                   })
                 );
               });
             } else if (room.gameState.every((cell) => cell !== "")) {
               console.log("Game ended in a draw");
-              room.players.forEach((player) => {
-                player.send(
+              room.players.forEach((_, playerWs) => {
+                playerWs.send(
                   JSON.stringify({
                     type: "gameOver",
                     winner: "draw",
@@ -174,12 +178,55 @@ wss.on("connection", (ws) => {
           const room = rooms.get(roomId);
           room.gameState = Array(9).fill("");
           room.currentPlayer = "X";
-          room.players.forEach((player) => {
-            player.send(
+          room.moveHistory = [];
+          room.lastMove = null;
+          room.players.forEach((_, playerWs) => {
+            playerWs.send(
               JSON.stringify({
                 type: "restart",
                 gameState: room.gameState,
                 currentPlayer: room.currentPlayer,
+              })
+            );
+          });
+        }
+        break;
+
+      case "undo":
+        // Handle undo move
+        if (roomId && rooms.has(roomId)) {
+          const room = rooms.get(roomId);
+          if (room.lastMove && room.lastMove.player === data.player) {
+            const { index } = room.lastMove;
+            room.gameState[index] = "";
+            room.currentPlayer = data.player;
+            room.lastMove = null;
+
+            room.players.forEach((_, playerWs) => {
+              playerWs.send(
+                JSON.stringify({
+                  type: "move",
+                  index,
+                  player: data.player,
+                  gameState: room.gameState,
+                  currentPlayer: room.currentPlayer,
+                })
+              );
+            });
+          }
+        }
+        break;
+
+      case "chat":
+        // Handle chat messages
+        if (roomId && rooms.has(roomId)) {
+          const room = rooms.get(roomId);
+          room.players.forEach((_, playerWs) => {
+            playerWs.send(
+              JSON.stringify({
+                type: "chat",
+                message: data.message,
+                player: data.player,
               })
             );
           });
@@ -199,8 +246,8 @@ wss.on("connection", (ws) => {
       } else {
         // Notify remaining player
         console.log(`Notifying remaining player in room ${roomId}`);
-        room.players.forEach((player) => {
-          player.send(
+        room.players.forEach((_, playerWs) => {
+          playerWs.send(
             JSON.stringify({
               type: "opponentLeft",
               message: "Opponent has left the game",
@@ -227,14 +274,14 @@ function checkWinner(board) {
   for (const pattern of winPatterns) {
     const [a, b, c] = pattern;
     if (board[a] && board[a] === board[b] && board[a] === board[c]) {
-      return board[a];
+      return { winner: board[a], winningLine: pattern };
     }
   }
-  return null;
+  return { winner: null, winningLine: null };
 }
 
 // Start the server
-const PORT = process.env.PORT || 8080;
+const PORT = process.env.PORT || 3000;
 const localIP = getLocalIP();
 server.listen(PORT, "0.0.0.0", () => {
   console.log(`Server is running on http://localhost:${PORT}`);
