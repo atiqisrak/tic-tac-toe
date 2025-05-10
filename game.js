@@ -147,14 +147,26 @@ class TicTacToe {
 
       // Generate QR code
       const qrCodeDiv = document.getElementById("qrCode");
-      await QRCode.toCanvas(qrCodeDiv, roomUrl, {
-        width: 128,
-        margin: 1,
-        color: {
-          dark: "#10b981", // Changed to emerald
-          light: "#ffffff",
-        },
-      });
+      if (qrCodeDiv) {
+        try {
+          // Clear any existing QR code
+          qrCodeDiv.innerHTML = "";
+
+          // Create QR code using the correct method
+          new QRCode(qrCodeDiv, {
+            text: roomUrl,
+            width: 128,
+            height: 128,
+            colorDark: "#10b981",
+            colorLight: "#ffffff",
+            correctLevel: QRCode.CorrectLevel.H,
+          });
+        } catch (error) {
+          console.error("Error generating QR code:", error);
+          qrCodeDiv.innerHTML =
+            '<p class="error-message">Failed to generate QR code</p>';
+        }
+      }
 
       this.updateStatus("Waiting for opponent to join...");
     } catch (error) {

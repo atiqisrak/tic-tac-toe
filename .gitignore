@@ -1,11 +1,2 @@
-
-/dist
 /build
-/public
-/src
-/test
-/docs
-/logs
-/cache
-/temp
 /node_modules
